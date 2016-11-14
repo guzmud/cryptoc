@@ -16,9 +16,9 @@ Algorithms
 - [Autokey](https://en.wikipedia.org/wiki/Autokey_cipher), illustration of the use of a buffer and feedbacks/loops in cryptographic algorithms
 - [Vernam](https://en.wikipedia.org/wiki/Gilbert_Vernam#The_Vernam_cipher), illustration of a combination of previous illustrations as a way to craft cryptographic algorithms
 - [Railfence](https://en.wikipedia.org/wiki/Rail_fence_cipher), illustration of moving elements' positions and orders
+- [Keyword](https://en.wikipedia.org/wiki/Keyword_cipher), illustration of alphabet letters' order manipulation
 - ARC4, the alleged [RC4](https://en.wikipedia.org/wiki/RC4), illustration of the use of pseudo-randomness generation and key scheduling
 - [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)), illustration of the use of stronger mathematical concepts and of public/private keys
-- [Keyword](https://en.wikipedia.org/wiki/Keyword_cipher), illustration of alphabet letters' order manipulation
 
 Todo
 ----
