@@ -2,6 +2,8 @@
 
 import random  # for testing purposes
 
+from genutils import data_gen
+
 
 def cypher_int(intvalue, keyvalue):
     return intvalue ^ keyvalue
@@ -17,34 +19,12 @@ def cypher_str(strvalue, keyvalue):
                     in enumerate(strvalue)])
 
 
-def test_str(tstr, keyvalue):
-    """Test the equality between a string and its decyphered cypher"""
-    lstr = cypher_str(cypher_str(tstr, keyvalue), keyvalue)
-    return tstr == lstr
-
-
-def test_routine(rounds=500, verbose=False):
+def test_routine(rounds=500):
     """
     Test routine using random ascii letters for R rounds
     """
-
-    if verbose:
-        print "Testing {rounds} rounds: ".format(rounds=rounds),
-
     for x in range(rounds):
-        tstr = ''.join([chr(random.randint(0, 255))
-                        for y
-                        in range(random.randint(50, 250))])
-
-        keyvalue = ''.join([chr(random.randint(0, 255))
-                            for y
-                            in range(random.randint(50, 250))])
-
-        if not test_str(tstr, keyvalue):
-            if verbose:
-                print "Failed string {tstr}: ".format(tstr=tstr)
-                print "Operation: cypher = clear ^ keyvalue, with "
-                print "keyvalue: {keyvalue}".format(keyvalue=keyvalue)
-            return False
-
-    return True
+        tstr = data_gen()
+        keyvalue = data_gen()
+        lstr = cypher_str(cypher_str(tstr, keyvalue), keyvalue)
+        assert tstr == lstr

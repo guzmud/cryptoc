@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-import random  # for testing purposes
-import string  # for testing purposes
+from genutils import smallcap_gen
 
 
 def key_str2intlst(keystring):
@@ -44,7 +43,7 @@ def session_init(key):
 
 def cypher_int(intvalue, keysession):
     """Cypher an integer according to keysession"""
-    return intvalue ^ keysession.next()
+    return intvalue ^ next(keysession)
 
 
 def cypher_char(charvalue, keysession):
@@ -57,34 +56,16 @@ def cypher_str(strvalue, keysession):
     return ''.join([cypher_char(c, keysession) for c in strvalue])
 
 
-def test_str(tstr, keysession1,keysession2):
-    """Test the equality between a string and its decyphered cypher"""
-    cstr = cypher_str(tstr, keysession1)
-    lstr = cypher_str(cstr, keysession2)
-    return tstr == lstr
-
-
-def test_routine(rounds=500, verbose=False):
+def test_routine(rounds=500):
     """
     Test routine using the xmpl_values on random ascii letters for R rounds
     """
 
-    key = random.sample(string.ascii_letters, random.randint(20, 46))
+    key = smallcap_gen()
     keysession1 = session_init(key_str2intlst(key))
     keysession2 = session_init(key_str2intlst(key))
-    
-    if verbose:
-        print "Testing {rounds} rounds: ".format(rounds=rounds),
-
     for x in range(rounds):
-        tstr = ''.join(random.sample(string.ascii_letters,
-                                     random.randint(20, 46)))
-
-        if not test_str(tstr, keysession1, keysession2):
-            if verbose:
-                print "Failed string {tstr}: ".format(tstr=tstr)
-                print "Operation: cypher = (clear**pubkey % n), with "
-                print "key: {key}".format(key=key)
-            return False
-
-    return True
+        tstr = smallcap_gen()
+        cstr = cypher_str(tstr, keysession1)
+        lstr = cypher_str(cstr, keysession2)
+        assert tstr == lstr

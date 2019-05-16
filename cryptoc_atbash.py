@@ -2,11 +2,7 @@
 
 import random  # for testing purposes
 
-
-def xmpl_alphabet():
-    """ Return a dictionnary with sample value for alphabet"""
-    import string
-    return {"alphabet": string.ascii_letters}
+from genutils import alphabet_gen
 
 
 def cypher_el(elvalue, alphabet):
@@ -29,29 +25,13 @@ def uncypher_lst(lstvalue, alphabet):
     return [uncypher_el(e, alphabet) for e in lstvalue]
 
 
-def test_lst(tlst, alphabet):
-    """Test the equality between a list and its decyphered cypher"""
-    llst = uncypher_lst(cypher_lst(tlst, alphabet),
-                        alphabet)
-    return tlst == llst
-
-
-def test_routine(rounds=500, verbose=False):
+def test_routine(rounds=500):
     """
     Test routine using the xmpl_alphabet on random ascii letters for R rounds
     """
-    alphabet = xmpl_alphabet()["alphabet"]
-    
-    if verbose:
-        print "Testing {rounds} rounds: ".format(rounds=rounds),
-
+    alphabet = alphabet_gen()
     for x in range(rounds):
         tlst = random.sample(alphabet, random.randint(20, 46))
-
-        if not test_lst(tlst, alphabet):
-            if verbose:
-                print "Failed list {tlst}: ".format(tlst=tlst)
-                print "Alphabet: {alphabet}".format(alphabet=alphabet)
-            return False
-
-    return True
+        llst = uncypher_lst(cypher_lst(tlst, alphabet),
+                            alphabet)
+        assert tlst == llst

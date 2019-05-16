@@ -3,10 +3,7 @@
 import string  # for testing purposes
 import random  # for testing purposes
 
-
-def xmpl_alphabet():
-    """ Return a dictionnary with sample value for alphabet"""
-    return {"alphabet": string.ascii_letters}
+from genutils import alphabet_gen
 
 
 def get_key_element(key):
@@ -23,7 +20,7 @@ def session_init(key):
 
 def cypher_el(elvalue, keysession, alphabet):
     """Cypher an element according to key element value and alphabet"""
-    indx = (alphabet.index(elvalue) + alphabet.index(keysession.next())) % len(alphabet)
+    indx = (alphabet.index(elvalue) + alphabet.index(next(keysession))) % len(alphabet)
     return alphabet[indx]
 
 
@@ -34,7 +31,7 @@ def cypher_lst(lstvalue, keysession, alphabet):
 
 def uncypher_el(elvalue, keysession, alphabet):
     """Uncypher an element according to key element value and alphabet"""
-    indx = (alphabet.index(elvalue) - alphabet.index(keysession.next())) % len(alphabet)
+    indx = (alphabet.index(elvalue) - alphabet.index(next(keysession))) % len(alphabet)
     return alphabet[indx]
 
 
@@ -43,36 +40,17 @@ def uncypher_lst(lstvalue, keysession, alphabet):
     return [uncypher_el(e, keysession, alphabet) for e in lstvalue]
 
 
-def test_lst(tlst, keysession1, keysession2, alphabet):
-    """Test the equality between a list and its decyphered cypher"""
-    clst = cypher_lst(tlst, keysession1, alphabet)
-    llst = uncypher_lst(clst, keysession2, alphabet)
-    return tlst == llst
-
-
-def test_routine(rounds=500, verbose=False):
+def test_routine(rounds=500):
     """
     Test routine using the xmpl_alphabet on random elements for R rounds
     """
-    alphabet = xmpl_alphabet()["alphabet"]
-    
+    alphabet = alphabet_gen()
     key = random.sample(alphabet,
                         random.randint(20,46))
-    
     keysession1 = session_init(key)
     keysession2 = session_init(key)
-    
-    if verbose:
-        print "Testing {rounds} rounds: ".format(rounds=rounds),
-
     for x in range(rounds):
         tlst = random.sample(alphabet, random.randint(20, 46))
-
-        if not test_lst(tlst, keysession1, keysession2, alphabet):
-            if verbose:
-                print "Failed list {tlst}: ".format(tlst=tlst)
-                print "With key: {key}".format(key=key)
-                print "alphabet: {alphabet}".format(alphabet=alphabet)
-            return False
-
-    return True
+        clst = cypher_lst(tlst, keysession1, alphabet)
+        llst = uncypher_lst(clst, keysession2, alphabet)
+        assert tlst == llst

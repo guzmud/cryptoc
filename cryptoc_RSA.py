@@ -1,43 +1,7 @@
 #!/usr/bin/python
 
-import random  # for testing purposes
-import string  # for testing purposes
-
-
-def modular_multiplicative_inverse(a, b):
-    """
-    Return the modular multiplicative inverse using the extended Euclide.
-    Warning: this function assumes there is one to be found.
-    """
-
-    if a != 0:
-        R, x0, x1, y0, y1 = 0, 1, 0, 0, 1
-        U, V = a, b
-        while R != 1:
-            Q = U//V
-            R = U-(Q*V)
-            x0, x1 = x1, x0-(Q*x1)
-            y0, y1 = y1, y0-(Q*y1)
-            U, V = V, R
-        return x1 % b
-
-    else:
-        return 0
-
-
-def xmpl_values():
-    """Return a dictionnary with sample values for n, pubkey and privkey"""
-
-    p = 263
-    q = 271
-    n = p*q
-    totient = (p-1)*(q-1)
-    e = 281
-    d = modular_multiplicative_inverse(e, totient)
-
-    return {"n": n,
-            "pubkey": e,
-            "privkey": d}
+from genutils import data_gen
+from rsamaths import xmpl_values
 
 
 def cypher_int(intvalue, pubkey, n):
@@ -70,33 +34,16 @@ def uncypher_lst(lstvalue, privkey, n):
     return ''.join([uncypher_el(e, privkey, n) for e in lstvalue])
 
 
-def test_str(tstr, pubkey, privkey, n):
-    """Test the equality between a string and its decyphered cypher"""
-    lstr = uncypher_lst(cypher_str(tstr, pubkey, n),
-                        privkey, n)
-    return tstr == lstr
-
-
-def test_routine(rounds=500, verbose=False):
+def test_routine(rounds=500):
     """
     Test routine using the xmpl_values on random ascii letters for R rounds
     """
-    n = xmpl_values()["n"]
-    pubkey = xmpl_values()["pubkey"]
-    privkey = xmpl_values()["privkey"]
-    if verbose:
-        print "Testing {rounds} rounds: ".format(rounds=rounds),
-
+    rsa_values = xmpl_values()
+    n = rsa_values["n"]
+    pubkey = rsa_values["pubkey"]
+    privkey = rsa_values["privkey"]
     for x in range(rounds):
-        tstr = ''.join(random.sample(string.ascii_letters,
-                                     random.randint(20, 46)))
-
-        if not test_str(tstr, pubkey, privkey, n):
-            if verbose:
-                print "Failed string {tstr}: ".format(tstr=tstr)
-                print "Operation: cypher = (clear**pubkey % n), with"
-                print "n: {n}; pubkey: {pubkey};".format(n=n, pubkey=pubkey)
-                print "privkey: {privkey}".format(privkey=privkey)
-            return False
-
-    return True
+        tstr = data_gen()
+        lstr = uncypher_lst(cypher_str(tstr, pubkey, n),
+                            privkey, n)
+        assert tstr == lstr

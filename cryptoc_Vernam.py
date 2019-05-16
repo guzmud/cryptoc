@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 import random
-import string  # for testing purposes
+
+from genutils import data_gen, seed_gen
 
 
 def set_seed(seed):
@@ -32,34 +33,15 @@ def craft_strvalue(strvalue):
     return ''.join([craft_charbyte(c) for c in strvalue])
 
 
-def test_str(tstr, seed):
-    """Test the equality between a string and its crafted craft"""
-    set_seed(seed)
-    cstr = craft_strvalue(tstr)
-    set_seed(seed)
-    rstr = craft_strvalue(cstr)
-
-    return tstr == rstr
-
-
-def test_routine(rounds=500, verbose=False):
+def test_routine(rounds=500):
     """
     Test routine using a random seed on random printable ascii for R rounds
     """
-    if verbose:
-        print "Testing {rounds} rounds: ".format(rounds=rounds),
-
     for x in range(rounds):
-        seed = random.randint(0, 1024*rounds)
-        tstr = ''.join(random.sample(string.printable,
-                                     random.randint(40, 90)))
-
-        if not test_str(tstr, seed):
-            if verbose:
-                print "Failed string {tstr}: ".format(tstr=tstr)
-                print "Operation: cypher= clear^maskbit, with"
-                print "S: {seed}, as the seed for the mask".format(seed=seed)
-
-            return False
-
-    return True
+        seed = seed_gen()
+        tstr = data_gen()
+        set_seed(seed)
+        cstr = craft_strvalue(tstr)
+        set_seed(seed)
+        rstr = craft_strvalue(cstr)
+        assert tstr == rstr

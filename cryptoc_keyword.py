@@ -3,10 +3,7 @@
 import string
 import random  # for testing purposes
 
-
-def xmpl_alphabet():
-    """ Return a dictionnary with sample value for alphabet"""
-    return {"alphabet": string.ascii_letters}
+from genutils import alphabet_gen
 
 
 def cipher_alphabet(key, alphabet):
@@ -44,34 +41,16 @@ def uncypher_lst(lstvalue, keylphabet, alphabet):
     return [uncypher_el(e, keylphabet, alphabet) for e in lstvalue]
 
 
-def test_lst(tlst, keylphabet, alphabet):
-    """Test the equality between a list and its decyphered cypher"""
-    llst = uncypher_lst(cypher_lst(tlst, keylphabet, alphabet),
-                        keylphabet, alphabet)
-    return tlst == llst
-
-
-def test_routine(rounds=500, verbose=False):
+def test_routine(rounds=500):
     """
     Test routine using the xmpl_alphabet on random elements for R rounds
     """
-    alphabet = xmpl_alphabet()["alphabet"]
+    alphabet = alphabet_gen()
     key = random.sample(alphabet,
                         random.randint(5,15))
     keylphabet = cipher_alphabet(key, alphabet)
-    
-    if verbose:
-        print "Testing {rounds} rounds: ".format(rounds=rounds),
-
     for x in range(rounds):
         tlst = random.sample(alphabet, random.randint(20, 46))
-
-        if not test_lst(tlst, keylphabet, alphabet):
-            if verbose:
-                print "Failed list {tlst}: ".format(tlst=tlst)
-                print "With key: {key}".format(key=key)
-                print "keylphabet: {keylphabet}".format(keylphabet=keylphabet)
-                print "alphabet: {alphabet}".format(alphabet=alphabet)
-            return False
-
-    return True
+        llst = uncypher_lst(cypher_lst(tlst, keylphabet, alphabet),
+                            keylphabet, alphabet)
+        assert tlst == llst

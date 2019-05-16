@@ -3,11 +3,12 @@
 import random  # for testing purposes
 import string  # for testing purposes
 
+from genutils import data_gen
 
 def cypher_str(strvalue, fencenum):
     lstvalue = list(strvalue)
     fence = [[] for f in range(fencenum)]
-    flow = range(fencenum) + [x for x in reversed(range(1, fencenum-1))]
+    flow = list(range(fencenum)) + [x for x in reversed(range(1, fencenum-1))]
     flowptr = 0
 
     while len(lstvalue) > 0:
@@ -19,7 +20,7 @@ def cypher_str(strvalue, fencenum):
 
 def uncypher_str(strvalue, fencenum):
     fence = [[] for f in range(fencenum)]
-    flow = range(fencenum) + [x for x in reversed(range(1, fencenum-1))]
+    flow = list(range(fencenum)) + [x for x in reversed(range(1, fencenum-1))]
     flowptr = 0
 
     for k in range(len(strvalue)):
@@ -33,30 +34,12 @@ def uncypher_str(strvalue, fencenum):
                     for k in range(len(strvalue))])
 
 
-def test_str(tstr, fencenum):
-    """Test the equality between a string and its decyphered cypher"""
-    lstr = uncypher_str(cypher_str(tstr, fencenum), fencenum)
-    return tstr == lstr
-
-
-def test_routine(rounds=500, verbose=False):
+def test_routine(rounds=500):
     """
     Test routine using random ascii printables for R rounds
     """
-
-    fencenumber = random.randint(1,10)
-
-    if verbose:
-        print "Testing {rounds} rounds: ".format(rounds=rounds),
-
+    fencenum = random.randint(1,10)
     for x in range(rounds):
-        tstr = ''.join(random.sample(string.printable,
-                                     random.randint(20, 50)))
-
-        if not test_str(tstr, fencenumber):
-            if verbose:
-                print "Failed string {tstr}: ".format(tstr=tstr)
-                print "fencenumber: {fencenum}".format(fencenum=fencenumber)
-            return False
-
-    return True
+        tstr = data_gen()
+        lstr = uncypher_str(cypher_str(tstr, fencenum), fencenum)
+        assert tstr == lstr

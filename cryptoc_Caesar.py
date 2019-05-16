@@ -1,16 +1,8 @@
 #!/usr/bin/python
 
-import random  # for testing purposes
+from random import randint, sample
 
-
-def xmpl_alphabet():
-    """ Return a dictionnary with sample value for alphabet"""
-    import string
-    return {"alphabet": string.ascii_letters}
-
-
-def rectify_shift(shift, alphabet):
-    return shift % len(alphabet)
+from genutils import alphabet_gen, element_gen, data_gen
 
 
 def cypher_el(elvalue, shift, alphabet):
@@ -33,32 +25,14 @@ def uncypher_lst(lstvalue, shift, alphabet):
     return [uncypher_el(e, shift, alphabet) for e in lstvalue]
 
 
-def test_lst(tlst, shift, alphabet):
-    """Test the equality between a list and its decyphered cypher"""
-    llst = uncypher_lst(cypher_lst(tlst, shift, alphabet),
-                        shift, alphabet)
-    return tlst == llst
-
-
-def test_routine(rounds=500, verbose=False):
+def test_routine(rounds=500):
     """
     Test routine using the xmpl_alphabet on random elements for R rounds
     """
-    alphabet = xmpl_alphabet()["alphabet"]
-    
-    if verbose:
-        print "Testing {rounds} rounds: ".format(rounds=rounds),
-
+    alphabet = alphabet_gen()
     for x in range(rounds):
-        shift = random.randint(0, len(alphabet)*3)
-        shift = rectify_shift(shift, alphabet)
-        tlst = random.sample(alphabet, random.randint(20, 46))
-
-        if not test_lst(tlst, shift, alphabet):
-            if verbose:
-                print "Failed list {tlst}: ".format(tlst=tlst)
-                print "With shift: {shift}".format(shift=shift)
-                print "alphabet: {alphabet}".format(alphabet=alphabet)
-            return False
-
-    return True
+        shift = element_gen()
+        tlst = sample(alphabet, randint(5,15))
+        llst = uncypher_lst(cypher_lst(tlst, shift, alphabet),
+                            shift, alphabet)
+        assert tlst == llst
